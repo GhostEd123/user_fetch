@@ -3,53 +3,13 @@ import { StyleSheet, View, ActivityIndicator, ScrollView } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 
 import { ThemedText } from '@/components/themed-text';
+import { useFetchUserById } from '../../hooks/useUserData';
 
-interface User {
-  id: number;
-  name: string;
-  username: string;
-  email: string;
-  phone: string;
-  website: string;
-  company: {
-    name: string;
-    catchPhrase: string;
-    bs: string;
-  };
-  address: {
-    street: string;
-    suite: string;
-    city: string;
-    zipcode: string;
-  };
-}
+
 
 export default function UserDetailScreen() {
   const { id } = useLocalSearchParams();
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!id) return;
-
-    fetch(`https://jsonplaceholder.typicode.com/users/${id}`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('User not found or network error');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log(data);
-        setUser(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setLoading(false);
-      });
-  }, [id]);
+  const { user, loading, error } = useFetchUserById(id);
 
   if (loading) {
     return (
